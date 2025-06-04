@@ -1,0 +1,32 @@
+RAPPORT DES VALEURS MANQUANTES - DATASET ORIGINAL
+==================================================
+
+Total de NA : 28,316,822
+Taux de complétude : 58.29%
+
+Détail par colonne :
+  - Consommation (MW): 12 NA
+  - Thermique (MW): 12 NA
+  - Nucléaire (MW): 701,287 NA
+  - Solaire (MW): 12 NA
+  - Hydraulique (MW): 12 NA
+  - Pompage (MW): 736,327 NA
+  - Bioénergies (MW): 12 NA
+  - Ech. physiques (MW): 12 NA
+  - Stockage batterie: 1,683,084 NA
+  - Déstockage batterie: 1,683,084 NA
+  - Eolien terrestre: 1,683,084 NA
+  - Eolien offshore: 1,683,084 NA
+  - TCO Thermique (%): 1,472,256 NA
+  - TCH Thermique (%): 1,472,256 NA
+  - TCO Nucléaire (%): 1,560,096 NA
+  - TCH Nucléaire (%): 1,742,736 NA
+  - TCO Eolien (%): 1,472,256 NA
+  - TCH Eolien (%): 1,472,256 NA
+  - TCO Solaire (%): 1,472,256 NA
+  - TCH Solaire (%): 1,472,256 NA
+  - TCO Hydraulique (%): 1,472,256 NA
+  - TCH Hydraulique (%): 1,472,256 NA
+  - TCO Bioénergies (%): 1,472,256 NA
+  - TCH Bioénergies (%): 1,472,256 NA
+  - Column 30: 2,121,408 NA

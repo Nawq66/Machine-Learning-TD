@@ -1,0 +1,16 @@
+RAPPORT DE VISUALISATION DES DONNÉES ECO2MIX
+==================================================
+
+1. FICHIERS GÉNÉRÉS:
+   - distribution_variables_cles.png
+   - violinplots_sources_energie.png
+   - evolution_temporelle_energie.png
+   - analyse_regionale_comparative.png
+   - cartographie_complete_NA.png
+   - matrices_correlation_complete.png
+
+2. INSIGHTS PRINCIPAUX:
+   - Variables analysées: 9
+   - Période couverte: 2013-01-01 00:00:00 à 2023-01-31 23:00:00
+   - Régions: 12
+   - Corrélations > 0.5: 41

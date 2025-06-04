@@ -1,0 +1,25 @@
+RAPPORT D'ANALYSE DES CORRÉLATIONS - ECO2MIX
+==================================================
+
+1. TESTS QUANTITATIF-QUANTITATIF
+                                  Variables        N  Pearson_r  Pearson_p  Spearman_rho  Spearman_p  Kendall_tau      Kendall_p  R_squared  Residuals_normal
+0   Consommation_MW vs Production_totale_MW  1060704   0.312815        0.0      0.317779         0.0     0.267235  1.375452e-176   0.097853             False
+1           Consommation_MW vs Thermique_MW  1060704   0.329733        0.0      0.413376         0.0     0.295178  2.254078e-213   0.108724             False
+2         Part_renouvelable vs Nucleaire_MW  1060704  -0.685342        0.0     -0.740773         0.0    -0.556247   0.000000e+00   0.469694             False
+3                   Eolien_MW vs Solaire_MW  1060704  -0.054039        0.0     -0.089182         0.0    -0.072284   1.072784e-12   0.002920             False
+4              Hydraulique_MW vs Balance_MW  1060704   0.354214        0.0      0.276865         0.0     0.202012  2.225876e-100   0.125467             False
+5                        Hour vs Solaire_MW  1060704   0.114144        0.0      0.259099         0.0     0.178639   2.265188e-67   0.013029             False
+6  Consommation_MW vs Echanges_physiques_MW  1060704   0.184067        0.0      0.060534         0.0     0.057953   8.032649e-10   0.033881             False
+
+2. TESTS QUANTITATIF-QUALITATIF
+           Quantitative Qualitative  N_groups        ANOVA_F       ANOVA_p      Kruskal_H      Kruskal_p  Eta_squared Effect_size
+0       Consommation_MW      Region        12  269068.352748  0.000000e+00  834127.585728   0.000000e+00     0.736175       Large
+1  Production_totale_MW      Season         4    7521.927160  0.000000e+00   23078.049515   0.000000e+00     0.020831       Small
+2     Part_renouvelable   IsWeekend         2    1989.022080  0.000000e+00    1431.066250   0.000000e+00     0.001872       Small
+3             Eolien_MW   DayOfWeek         7      53.322366  4.465284e-66     655.940058  1.984782e-138     0.000302       Small
+4            Balance_MW      Nature         2      35.745616  2.249089e-09     124.497382   6.556558e-29     0.000034       Small
+
+3. CONCLUSIONS
+- 12 relations significatives sur 12 testées
+- Corrélation la plus forte : Part_renouvelable vs Nucleaire_MW (r=-0.685)
+- Effet le plus important : Consommation_MW par Region (η²=0.736)
