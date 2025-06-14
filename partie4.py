@@ -117,7 +117,8 @@ print(f"✓ Features de moyennes mobiles créées ({len(windows)} fenêtres)")
 
 # 4. Features d'interaction
 df['Hour_IsWeekend'] = df['Hour'] * df['IsWeekend']
-df['Production_Conso_Ratio'] = df['Production_totale_MW'] / (df['Consommation_MW'] + 1)
+# Utiliser la consommation de l'heure précédente pour éviter la fuite d'information
+df['Production_Conso_Ratio'] = df['Production_totale_MW'] / (df['Consommation_MW_lag_1'] + 1)
 df['Renew_Nuclear_Ratio'] = df['Production_renouvelable_MW'] / (df['Nucleaire_MW'] + 1)
 print("✓ Features d'interaction créées")
 
@@ -426,7 +427,7 @@ ax1.grid(True, alpha=0.3)
 
 # Ajouter les métriques
 textstr = f'R² = {best_model_info["test_r2"]:.3f}\n'
-textstr += f'RMSE = {best_model_info["test_rmse"]}:.1f MWh\n'
+textstr += f'RMSE = {best_model_info["test_rmse"]:.1f} MWh\n'
 textstr += f'MAPE = {best_model_info["test_mape"]:.2f}%'
 props = dict(boxstyle='round', facecolor='wheat', alpha=0.5)
 ax1.text(0.05, 0.95, textstr, transform=ax1.transAxes, fontsize=10,
