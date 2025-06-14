@@ -48,6 +48,9 @@ print("="*60)
 df = pd.read_csv('eco2mix_cleaned.csv')
 df['Datetime'] = pd.to_datetime(df['Datetime'])
 
+# S'assurer que les données sont triées temporellement par région
+df = df.sort_values(['Region', 'Datetime']).reset_index(drop=True)
+
 print(f"✓ Dataset chargé : {df.shape[0]:,} lignes, {df.shape[1]} colonnes")
 print(f"✓ Période : {df['Datetime'].min()} à {df['Datetime'].max()}")
 
@@ -88,13 +91,13 @@ def create_lag_features(df, target_col, lags):
 
 # Fonction pour créer des moyennes mobiles
 def create_rolling_features(df, target_col, windows):
-    """Crée des moyennes mobiles"""
+    """Crée des moyennes mobiles sans fuite de données"""
     for window in windows:
         df[f'{target_col}_rolling_mean_{window}'] = df.groupby('Region')[target_col].transform(
-            lambda x: x.rolling(window=window, min_periods=1).mean()
+            lambda x: x.shift(1).rolling(window=window, min_periods=1).mean()
         )
         df[f'{target_col}_rolling_std_{window}'] = df.groupby('Region')[target_col].transform(
-            lambda x: x.rolling(window=window, min_periods=1).std()
+            lambda x: x.shift(1).rolling(window=window, min_periods=1).std()
         )
     return df
 
