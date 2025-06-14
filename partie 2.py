@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from datetime import datetime
 import warnings
+import unicodedata
 warnings.filterwarnings('ignore')
 
 # Configuration esthétique des graphiques
@@ -29,6 +30,15 @@ print("="*70)
 print("\n📂 Chargement du dataset nettoyé...")
 df = pd.read_csv(r"C:\Users\nahta\Desktop\machinelearning\eco2mix_cleaned.csv")
 df['Datetime'] = pd.to_datetime(df['Datetime'])
+
+# Normaliser le nom des régions pour faciliter les filtrages
+def normalize_text(text: str) -> str:
+    """Remove accents and lowercase a string for robust matching."""
+    text = unicodedata.normalize('NFD', str(text))
+    text = ''.join(c for c in text if not unicodedata.combining(c))
+    return text.lower()
+
+df['Region_norm'] = df['Region'].apply(normalize_text)
 
 # Pour la cartographie des NA, charger aussi le dataset original
 df_original = pd.read_csv(r"C:\Users\nahta\Desktop\machinelearning\Dataset RTE - Eco2mix.csv", sep=';', encoding='utf-8')
@@ -284,9 +294,12 @@ ax3.grid(True, alpha=0.3, axis='x')
 ax4 = axes[1, 1]
 regions_types = ['Ile-de-France', 'Auvergne-Rhone-Alpes', 'Bretagne']
 for region in regions_types:
-    hourly = df[df['Region'] == region].groupby('Hour')['Consommation_MW'].mean()
-    ax4.plot(hourly.index, hourly.values, marker='o', markersize=4, 
-             linewidth=2, label=region)
+    region_norm = normalize_text(region)
+    mask = df['Region_norm'] == region_norm
+    hourly = df[mask].groupby('Hour')['Consommation_MW'].mean()
+    if not hourly.empty:
+        ax4.plot(hourly.index, hourly.values, marker='o', markersize=4,
+                 linewidth=2, label=region)
 
 ax4.set_xlabel('Heure')
 ax4.set_ylabel('Consommation moyenne (MWh)')
