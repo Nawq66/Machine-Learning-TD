@@ -158,15 +158,23 @@ feature_sets = {
         'Production_totale_MW', 'Part_renouvelable'
     ],
     'Cyclique': [
-        'hour_sin', 'hour_cos', 'dow_sin', 'dow_cos', 
+        'hour_sin', 'hour_cos', 'dow_sin', 'dow_cos',
         'month_sin', 'month_cos', 'doy_sin', 'doy_cos',
         'IsWeekend', 'Production_totale_MW', 'Part_renouvelable',
         'Temperature_simulated'
     ],
+    'SansLag': [
+        'hour_sin', 'hour_cos', 'dow_sin', 'dow_cos',
+        'month_sin', 'month_cos', 'IsWeekend',
+        'Production_totale_MW', 'Nucleaire_MW', 'Eolien_MW',
+        'Solaire_MW', 'Hydraulique_MW', 'Thermique_MW',
+        'Part_renouvelable',
+        'Temperature_simulated', 'Renew_Nuclear_Ratio'
+    ],
     'Complet': [
         'hour_sin', 'hour_cos', 'dow_sin', 'dow_cos',
         'month_sin', 'month_cos', 'IsWeekend',
-        'Production_totale_MW', 'Nucleaire_MW', 'Eolien_MW', 
+        'Production_totale_MW', 'Nucleaire_MW', 'Eolien_MW',
         'Solaire_MW', 'Hydraulique_MW', 'Thermique_MW',
         'Part_renouvelable',
         'Consommation_MW_lag_1', 'Consommation_MW_lag_24',
@@ -385,6 +393,11 @@ ax2.set_ylabel('R²')
 ax2.set_title('Coefficient de détermination R²')
 ax2.legend(title='Features')
 ax2.grid(True, alpha=0.3)
+ax2.set_ylim(0.9, 1.0)
+for p in ax2.patches:
+    ax2.annotate(f"{p.get_height():.3f}",
+                 (p.get_x() + p.get_width() / 2, p.get_height()),
+                 ha='center', va='bottom', fontsize=8, rotation=90)
 ax2.axhline(y=0.9, color='red', linestyle='--', alpha=0.5, label='R²=0.9')
 
 # 1.3 MAPE par modèle
@@ -500,44 +513,44 @@ fig3, axes = plt.subplots(1, 2, figsize=(16, 8))
 fig3.suptitle('Analyse de l\'importance des features', fontsize=16)
 
 # Pour Random Forest
-rf_key = f"Complet_Random Forest"
+rf_key = f"{best_model_info['feature_set']}_Random Forest"
 if rf_key in trained_models:
     ax1 = axes[0]
     rf_pipeline = trained_models[rf_key]['pipeline']
     rf_model = rf_pipeline.named_steps['model']
-    
+
     # Récupérer les noms de features après preprocessing
     preprocessor = rf_pipeline.named_steps['preprocessor']
     feature_names = []
-    
+
     # Features numériques
-    numeric_features = datasets['Complet']['features']
+    numeric_features = datasets[best_model_info['feature_set']]['features']
     feature_names.extend(numeric_features)
-    
+
     # Features catégorielles (one-hot encoded)
     if hasattr(preprocessor.named_transformers_['cat'], 'get_feature_names_out'):
         cat_features = preprocessor.named_transformers_['cat'].get_feature_names_out()
         feature_names.extend(cat_features)
-    
+
     # Importance des features
     importances = rf_model.feature_importances_
     indices = np.argsort(importances)[::-1][:20]  # Top 20
-    
-    ax1.barh(range(20), importances[indices])
-    ax1.set_yticks(range(20))
-    ax1.set_yticklabels([feature_names[i] if i < len(feature_names) else f'Feature_{i}' 
+
+    ax1.barh(range(len(indices)), importances[indices])
+    ax1.set_yticks(range(len(indices)))
+    ax1.set_yticklabels([feature_names[i] if i < len(feature_names) else f'Feature_{i}'
                         for i in indices])
     ax1.set_xlabel('Importance')
     ax1.set_title('Random Forest - Top 20 features')
     ax1.grid(True, alpha=0.3)
 
 # Pour XGBoost
-xgb_key = f"Complet_XGBoost"
+xgb_key = f"{best_model_info['feature_set']}_XGBoost"
 if xgb_key in trained_models:
     ax2 = axes[1]
     xgb_pipeline = trained_models[xgb_key]['pipeline']
     xgb_model = xgb_pipeline.named_steps['model']
-    
+
     # Plot importance
     from xgboost import plot_importance
     plot_importance(xgb_model, ax=ax2, max_num_features=20, importance_type='gain')
