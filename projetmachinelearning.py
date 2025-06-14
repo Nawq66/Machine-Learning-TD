@@ -22,11 +22,11 @@ print("="*60)
 # =====================================================
 # 1. CHARGEMENT DES DONNÉES
 # =====================================================
-print("\n📂 1. CHARGEMENT DES DONNÉES...")
+print("\n1. CHARGEMENT DES DONNÉES...")
 
 # Charger le dataset avec le bon séparateur
 df = pd.read_csv(r"C:\Users\nahta\Desktop\machinelearning\Dataset RTE - Eco2mix.csv", sep=';', encoding='utf-8')
-print(f"✓ Dataset chargé : {df.shape[0]} lignes, {df.shape[1]} colonnes")
+print(f"Dataset chargé : {df.shape[0]} lignes, {df.shape[1]} colonnes")
 
 # Afficher les premières colonnes pour vérification
 print("\nColonnes détectées:")
@@ -37,11 +37,11 @@ print("  ...")
 # =====================================================
 # 1.5 ANALYSE DES NA DANS LE DATASET ORIGINAL
 # =====================================================
-print("\n🔍 1.5 ANALYSE DES VALEURS MANQUANTES (DATASET ORIGINAL)...")
+print("\n1.5 ANALYSE DES VALEURS MANQUANTES (DATASET ORIGINAL)...")
 
 # Compter les NA dans le dataset brut
 na_original_total = df.isnull().sum().sum()
-print(f"\n📊 TOTAL DE VALEURS MANQUANTES : {na_original_total:,}")
+print(f"\nTOTAL DE VALEURS MANQUANTES : {na_original_total:,}")
 
 # Analyser par colonne
 na_by_column = df.isnull().sum()
@@ -55,10 +55,10 @@ if len(na_by_column_nonzero) > 0:
         print(f"  {col:<40} : {count:>7,} NA ({percentage:>5.2f}%)")
     print("-" * 60)
 else:
-    print("\n✅ Aucune valeur manquante détectée dans le dataset brut !")
+    print("\nAucune valeur manquante détectée dans le dataset brut !")
 
 # Identifier les colonnes qui devraient être numériques
-print("\n🔢 Analyse des colonnes numériques potentielles...")
+print("\nAnalyse des colonnes numériques potentielles...")
 numeric_patterns = ['(MW)', '(%)', 'TCO', 'TCH', 'batterie']
 potential_numeric_cols = [col for col in df.columns 
                          if any(pattern in col for pattern in numeric_patterns)]
@@ -73,11 +73,11 @@ for col in potential_numeric_cols[:5]:  # Tester sur les 5 premières
         test_conversion = pd.to_numeric(df[col], errors='coerce')
         new_na = test_conversion.isna().sum() - df[col].isna().sum()
         if new_na > 0:
-            print(f"  ⚠️ {col}: {new_na} valeurs non-numériques détectées")
+            print(f"  Attention {col}: {new_na} valeurs non-numériques détectées")
             non_numeric_count += new_na
 
 if non_numeric_count > 0:
-    print(f"\n⚠️ Total de valeurs qui deviendront NA après conversion : {non_numeric_count}")
+    print(f"\nTotal de valeurs qui deviendront NA après conversion : {non_numeric_count}")
 
 # Statistiques globales sur la qualité des données
 print("\n📈 STATISTIQUES DE QUALITÉ (DATASET ORIGINAL):")
@@ -96,7 +96,7 @@ na_stats_original = {
 
 # Visualiser les NA si présents
 if na_original_total > 0:
-    print("\n📊 Création d'une visualisation des NA...")
+    print("\nCréation d'une visualisation des NA...")
     
     # Créer une figure pour visualiser les NA
     fig_na, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 6))
@@ -109,6 +109,7 @@ if na_original_total > 0:
         ax1.set_yticklabels([col[:30] + '...' if len(col) > 30 else col for col in top_na.index])
         ax1.set_xlabel('Nombre de valeurs manquantes')
         ax1.set_title('Top 10 des colonnes avec le plus de NA')
+        ax1.set_xlim(0, max(top_na.values) * 1.1)
         
         # Ajouter les valeurs sur les barres
         for i, v in enumerate(top_na.values):
@@ -141,14 +142,14 @@ if na_original_total > 0:
     
     plt.tight_layout()
     plt.savefig('analyse_na_original.png', dpi=300, bbox_inches='tight')
-    print("✓ Visualisation des NA sauvegardée dans 'analyse_na_original.png'")
+    print("Visualisation des NA sauvegardée dans 'analyse_na_original.png'")
 
 print("\n" + "="*60)
 
 # =====================================================
 # 2. NETTOYAGE DES NOMS DE COLONNES
 # =====================================================
-print("\n🧹 2. NETTOYAGE DES NOMS DE COLONNES...")
+print("\n2. NETTOYAGE DES NOMS DE COLONNES...")
 
 # Dictionnaire de renommage pour plus de lisibilité
 rename_cols = {
@@ -182,7 +183,7 @@ rename_cols = {
 }
 
 df = df.rename(columns=rename_cols)
-print(f"✓ {len(rename_cols)} colonnes renommées")
+print(f"{len(rename_cols)} colonnes renommées")
 
 # Supprimer les colonnes inutiles
 cols_to_drop = []
@@ -192,7 +193,7 @@ if 'Code INSEE région' in df.columns:
     cols_to_drop.append('Code INSEE région')  # Redondant avec Région
 
 df = df.drop(columns=[col for col in cols_to_drop if col in df.columns])
-print(f"✓ {len(cols_to_drop)} colonnes supprimées")
+print(f"{len(cols_to_drop)} colonnes supprimées")
 
 # =====================================================
 # 3. CONVERSION DES TYPES DE DONNÉES (AVANT L'AGRÉGATION!)
@@ -217,12 +218,12 @@ for col in numeric_cols:
         df[col] = pd.to_numeric(df[col], errors='coerce')
         converted += 1
 
-print(f"✓ {converted} colonnes converties en numérique")
+print(f"{converted} colonnes converties en numérique")
 
 # =====================================================
 # 4. GESTION DES DATES ET TRANSFORMATION HORAIRE
 # =====================================================
-print("\n📅 4. GESTION DES DATES...")
+print("\n4. GESTION DES DATES...")
 
 # Créer une colonne datetime propre
 try:
@@ -231,25 +232,25 @@ try:
     elif 'Date_Heure' in df.columns:
         df['Datetime'] = pd.to_datetime(df['Date_Heure'])
     else:
-        print("⚠️ Colonnes Date/Heure non trouvées. Vérifiez le format du dataset.")
+        print("Avertissement : colonnes Date/Heure non trouvées. Vérifiez le format du dataset.")
         print("Colonnes disponibles:", df.columns.tolist())
         raise ValueError("Impossible de créer la colonne Datetime")
         
     df = df.sort_values(['Region', 'Datetime'])
     
 except Exception as e:
-    print(f"❌ Erreur lors de la création de la colonne Datetime: {e}")
+    print(f"Erreur lors de la création de la colonne Datetime: {e}")
     print("Vérifiez le format des dates dans votre dataset")
     raise
 
 # Vérifier la granularité temporelle
 time_diffs = df.groupby('Region')['Datetime'].diff().dropna()
 granularite = time_diffs.mode()[0]
-print(f"✓ Granularité temporelle détectée : {granularite}")
+print(f"Granularité temporelle détectée : {granularite}")
 
 # Si les données sont en 30 minutes, agréger à l'heure
 if granularite == pd.Timedelta('30 min'):
-    print("⏳ Agrégation des données à l'heure...")
+    print("Agrégation des données à l'heure...")
     
     df['Hour'] = df['Datetime'].dt.floor('H')
     
@@ -282,14 +283,14 @@ if granularite == pd.Timedelta('30 min'):
         if col in df.columns:
             df[col] = df[col] / 2
     
-    print("✓ Données agrégées à l'heure (MWh)")
+    print("Données agrégées à l'heure (MWh)")
 
 # Note: La conversion des types a déjà été faite avant l'agrégation
 
 # =====================================================
 # 5. GESTION DES VALEURS MANQUANTES
 # =====================================================
-print("\n🔍 5. ANALYSE ET TRAITEMENT DES VALEURS MANQUANTES...")
+print("\n5. ANALYSE ET TRAITEMENT DES VALEURS MANQUANTES...")
 
 # Re-définir numeric_cols pour la suite du traitement
 numeric_cols = ['Consommation_MW', 'Thermique_MW', 'Nucleaire_MW', 
@@ -331,12 +332,12 @@ for col in numeric_cols:
         df[col] = df[col].fillna(0)
 
 na_after = df.isnull().sum().sum()
-print(f"✓ NA traités : {na_before} → {na_after}")
+print(f"NA traités : {na_before} → {na_after}")
 
 # =====================================================
 # 6. CRÉATION DE VARIABLES SUPPLÉMENTAIRES
 # =====================================================
-print("\n🛠️ 6. CRÉATION DE VARIABLES SUPPLÉMENTAIRES...")
+print("\n6. CRÉATION DE VARIABLES SUPPLÉMENTAIRES...")
 
 # Variables temporelles
 df['Year'] = df['Datetime'].dt.year
@@ -374,25 +375,25 @@ df['Part_renouvelable'] = np.where(
 # Balance énergétique
 df['Balance_MW'] = df['Production_totale_MW'] - df['Consommation_MW']
 
-print(f"✓ {9} nouvelles variables créées")
+print(f"{9} nouvelles variables créées")
 
 # =====================================================
 # 7. VALIDATION DU DATASET
 # =====================================================
-print("\n✅ 7. VALIDATION DU DATASET NETTOYÉ")
+print("\n7. VALIDATION DU DATASET NETTOYÉ")
 print("="*60)
 
 def validate_dataset(df):
     """Fonction de validation complète du dataset"""
     
-    print("📊 RÉSUMÉ DU DATASET:")
+    print("RÉSUMÉ DU DATASET:")
     print(f"  - Nombre de lignes : {df.shape[0]:,}")
     print(f"  - Nombre de colonnes : {df.shape[1]}")
     print(f"  - Période : {df['Datetime'].min()} à {df['Datetime'].max()}")
     print(f"  - Nombre de régions : {df['Region'].nunique()}")
     print(f"  - Régions : {', '.join(df['Region'].unique())}")
     
-    print("\n📈 COHÉRENCE DES DONNÉES:")
+    print("\nCOHÉRENCE DES DONNÉES:")
     # Vérifier qu'il n'y a pas de valeurs négatives où c'est impossible
     cols_positive = ['Consommation_MW', 'Thermique_MW', 'Nucleaire_MW', 
                      'Solaire_MW', 'Bioenergies_MW']
@@ -400,18 +401,18 @@ def validate_dataset(df):
         if col in df.columns:
             neg_count = (df[col] < 0).sum()
             if neg_count > 0:
-                print(f"  ⚠️ {col} : {neg_count} valeurs négatives trouvées")
+                print(f"  Attention {col} : {neg_count} valeurs négatives trouvées")
             else:
-                print(f"  ✓ {col} : aucune valeur négative")
+                print(f"  {col} : aucune valeur négative")
     
-    print("\n🔍 VALEURS MANQUANTES:")
+    print("\nVALEURS MANQUANTES:")
     na_cols = df.columns[df.isnull().any()].tolist()
     if len(na_cols) == 0:
-        print("  ✓ Aucune valeur manquante")
+        print("  Aucune valeur manquante")
     else:
-        print(f"  ⚠️ Colonnes avec NA : {na_cols}")
+        print(f"  Colonnes avec NA : {na_cols}")
     
-    print("\n📊 STATISTIQUES CLÉS:")
+    print("\nSTATISTIQUES CLÉS:")
     print(f"  - Consommation moyenne : {df['Consommation_MW'].mean():.0f} MWh")
     print(f"  - Production totale moyenne : {df['Production_totale_MW'].mean():.0f} MWh")
     print(f"  - Part renouvelable moyenne : {df['Part_renouvelable'].mean():.1f}%")
@@ -424,7 +425,7 @@ validate_dataset(df)
 # =====================================================
 # 8. VISUALISATIONS DE CONTRÔLE
 # =====================================================
-print("\n📊 8. GÉNÉRATION DES VISUALISATIONS DE CONTRÔLE...")
+print("\n8. GÉNÉRATION DES VISUALISATIONS DE CONTRÔLE...")
 
 # Créer une figure avec plusieurs subplots
 fig, axes = plt.subplots(2, 3, figsize=(18, 10))
@@ -446,6 +447,7 @@ ax2.set_title(f'Évolution de la consommation - {sample_region}')
 ax2.set_xlabel('Date')
 ax2.set_ylabel('Consommation (MWh)')
 ax2.tick_params(axis='x', rotation=45)
+ax2.set_ylim(bottom=0)
 
 # 3. Mix énergétique moyen
 ax3 = axes[0, 2]
@@ -458,12 +460,14 @@ for col in ['Nucleaire_MW', 'Thermique_MW', 'Hydraulique_MW',
         prod_labels.append(col.replace('_MW', ''))
 
 ax3.pie(prod_means, labels=prod_labels, autopct='%1.1f%%')
+ax3.axis('equal')
 ax3.set_title('Mix énergétique moyen')
 
 # 4. Profil journalier de consommation
 ax4 = axes[1, 0]
 hourly_cons = df.groupby('Hour')['Consommation_MW'].mean()
 ax4.plot(hourly_cons.index, hourly_cons.values, marker='o')
+ax4.set_ylim(bottom=0)
 ax4.set_title('Profil journalier moyen de consommation')
 ax4.set_xlabel('Heure')
 ax4.set_ylabel('Consommation moyenne (MWh)')
@@ -471,8 +475,10 @@ ax4.grid(True, alpha=0.3)
 
 # 5. Corrélation production vs consommation
 ax5 = axes[1, 1]
-ax5.scatter(df['Production_totale_MW'], df['Consommation_MW'], 
+ax5.scatter(df['Production_totale_MW'], df['Consommation_MW'],
             alpha=0.1, s=1)
+ax5.set_xlim(left=0)
+ax5.set_ylim(bottom=0)
 ax5.set_title('Production vs Consommation')
 ax5.set_xlabel('Production totale (MWh)')
 ax5.set_ylabel('Consommation (MWh)')
@@ -480,45 +486,46 @@ ax5.set_ylabel('Consommation (MWh)')
 # 6. Distribution de la part renouvelable
 ax6 = axes[1, 2]
 df['Part_renouvelable'].hist(bins=50, ax=ax6)
+ax6.set_xlim(0, 100)
 ax6.set_title('Distribution de la part renouvelable')
 ax6.set_xlabel('Part renouvelable (%)')
 ax6.set_ylabel('Fréquence')
 
 plt.tight_layout()
 plt.savefig('validation_dataset.png', dpi=300, bbox_inches='tight')
-print("✓ Graphiques de validation sauvegardés dans 'validation_dataset.png'")
+print("Graphiques de validation sauvegardés dans 'validation_dataset.png'")
 
 # =====================================================
 # 9. SAUVEGARDE DU DATASET NETTOYÉ
 # =====================================================
-print("\n💾 9. SAUVEGARDE DU DATASET...")
+print("\n9. SAUVEGARDE DU DATASET...")
 
 # Sauvegarder le dataset nettoyé
 df.to_csv('eco2mix_cleaned.csv', index=False)
-print(f"✓ Dataset nettoyé sauvegardé : 'eco2mix_cleaned.csv'")
+print("Dataset nettoyé sauvegardé : 'eco2mix_cleaned.csv'")
 
 # Sauvegarder un échantillon pour vérification rapide
 df.head(1000).to_csv('eco2mix_sample.csv', index=False)
-print(f"✓ Échantillon sauvegardé : 'eco2mix_sample.csv'")
+print("Échantillon sauvegardé : 'eco2mix_sample.csv'")
 
 # =====================================================
 # 10. RAPPORT FINAL
 # =====================================================
 print("\n" + "="*60)
-print("🎉 NETTOYAGE TERMINÉ AVEC SUCCÈS!")
+print("NETTOYAGE TERMINÉ AVEC SUCCÈS")
 print("="*60)
 
-print("\n📋 ACTIONS EFFECTUÉES:")
-print("  1. ✓ Chargement avec séparateur ';'")
-print("  2. ✓ Renommage des colonnes pour lisibilité")
-print("  3. ✓ Conversion au pas horaire (si nécessaire)")
-print("  4. ✓ Conversion des types de données")
-print("  5. ✓ Traitement des valeurs manquantes")
-print("  6. ✓ Création de variables temporelles et calculées")
-print("  7. ✓ Validation de la cohérence des données")
-print("  8. ✓ Génération de visualisations de contrôle")
+print("\nACTIONS EFFECTUÉES:")
+print("  1. Chargement avec séparateur ';'")
+print("  2. Renommage des colonnes pour lisibilité")
+print("  3. Conversion au pas horaire (si nécessaire)")
+print("  4. Conversion des types de données")
+print("  5. Traitement des valeurs manquantes")
+print("  6. Création de variables temporelles et calculées")
+print("  7. Validation de la cohérence des données")
+print("  8. Génération de visualisations de contrôle")
 
-print("\n📊 BILAN DES VALEURS MANQUANTES:")
+print("\nBILAN DES VALEURS MANQUANTES:")
 print(f"  - NA dans le dataset ORIGINAL : {na_stats_original['total_na']:,}")
 print(f"  - NA dans le dataset FINAL : 0")
 print(f"  - Taux de complétude ORIGINAL : {na_stats_original['completeness_rate']:.2f}%")
@@ -530,18 +537,18 @@ if na_stats_original['total_na'] > 0:
     print("    • Règles métier (TCO=0 si production=0)")
     print("    • Remplissage par 0 pour les valeurs résiduelles")
 
-print("\n🚀 PROCHAINES ÉTAPES:")
+print("\nPROCHAINES ÉTAPES:")
 print("  → Partie 2 : Visualisation approfondie des données")
 print("  → Partie 3 : Tests statistiques de corrélation")
 print("  → Partie 4 : Modèles de régression (consommation)")
 print("  → Partie 5 : Classification (risque de blackout)")
 
-print("\n💡 CONSEIL:")
+print("\nCONSEIL:")
 print("  Examinez le fichier 'validation_dataset.png' pour vérifier")
 print("  visuellement la qualité du nettoyage avant de continuer.")
 
 # Afficher un résumé des colonnes finales
-print("\n📊 COLONNES DISPONIBLES POUR L'ANALYSE:")
+print("\nCOLONNES DISPONIBLES POUR L'ANALYSE:")
 print("  Variables de production:", [col for col in df.columns if '_MW' in col and 'Production' not in col][:5], "...")
 print("  Variables temporelles:", ['Year', 'Month', 'Day', 'Hour', 'DayOfWeek', 'IsWeekend', 'Season'])
 print("  Variables calculées:", ['Production_totale_MW', 'Production_renouvelable_MW', 'Part_renouvelable', 'Balance_MW'])
@@ -554,7 +561,7 @@ metadata = pd.DataFrame({
     'Unique_Values': df.nunique()
 })
 metadata.to_csv('metadata_dataset.csv', index=False)
-print("\n✓ Métadonnées sauvegardées dans 'metadata_dataset.csv'")
+print("\nMétadonnées sauvegardées dans 'metadata_dataset.csv'")
 
 # Sauvegarder aussi le rapport de NA pour comparaison
 with open('rapport_na_original.txt', 'w', encoding='utf-8') as f:
@@ -570,6 +577,6 @@ with open('rapport_na_original.txt', 'w', encoding='utf-8') as f:
     else:
         f.write("Aucune valeur manquante détectée.\n")
 
-print("✓ Rapport des NA sauvegardé dans 'rapport_na_original.txt'")
+print("Rapport des NA sauvegardé dans 'rapport_na_original.txt'")
 
 plt.show()
