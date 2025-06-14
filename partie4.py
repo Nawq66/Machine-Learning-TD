@@ -137,6 +137,9 @@ print("✓ Features météo simulées créées (température)")
 
 # Supprimer les lignes avec des NA dus aux lags
 df = df.dropna()
+
+# Re-trier chronologiquement l'ensemble des données pour la découpe train/test
+df = df.sort_values('Datetime').reset_index(drop=True)
 print(f"\n✓ Dataset final après feature engineering : {df.shape[0]:,} lignes, {df.shape[1]} colonnes")
 
 # =====================================================
@@ -165,7 +168,7 @@ feature_sets = {
         'month_sin', 'month_cos', 'IsWeekend',
         'Production_totale_MW', 'Nucleaire_MW', 'Eolien_MW', 
         'Solaire_MW', 'Hydraulique_MW', 'Thermique_MW',
-        'Part_renouvelable', 'Balance_MW',
+        'Part_renouvelable',
         'Consommation_MW_lag_1', 'Consommation_MW_lag_24',
         'Consommation_MW_rolling_mean_24', 'Consommation_MW_rolling_std_24',
         'Temperature_simulated', 'Production_Conso_Ratio'
